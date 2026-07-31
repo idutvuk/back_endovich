@@ -6,31 +6,30 @@
 
 from fastapi import APIRouter, status
 
-from app.logic import SonService
-from app.schemas import Son, SonCreate
+from app.logic import CosmonautService
+from app.schemas import Cosmonaut, CosmonautCreate
 
 
-class SonViews:
-    def __init__(self, service: SonService) -> None:
+class CosmonautViews:
+    def __init__(self, service: CosmonautService) -> None:
         self._service = service
-        self.router = APIRouter(prefix="/sons", tags=["sons"])
+        self.router = APIRouter(prefix="/cosmonauts", tags=["cosmonauts"])
         # Те самые декораторы FastAPI, применённые к методам класса.
-        self.router.post("", status_code=status.HTTP_201_CREATED)(self.create_son)
-        self.router.get("")(self.list_sons)
-        self.router.get("/{son_id}")(self.get_son)
-        self.router.delete("/{son_id}", status_code=status.HTTP_204_NO_CONTENT)(
-            self.delete_son
+        self.router.post("", status_code=status.HTTP_201_CREATED)(self.enroll)
+        self.router.get("")(self.list_cosmonauts)
+        self.router.get("/{cosmonaut_id}")(self.get_cosmonaut)
+        self.router.delete("/{cosmonaut_id}", status_code=status.HTTP_204_NO_CONTENT)(
+            self.expel
         )
 
-    def create_son(self, data: SonCreate) -> Son:
-        return self._service.register_son(data)
+    def enroll(self, data: CosmonautCreate) -> Cosmonaut:
+        return self._service.enroll(data)
 
-    def list_sons(self) -> list[Son]:
-        return self._service.all_sons()
+    def list_cosmonauts(self) -> list[Cosmonaut]:
+        return self._service.all()
 
-    def get_son(self, son_id: int) -> Son:
-        """Запрос о сыне. Если всё хорошо — ваш сын вернулся 200."""
-        return self._service.find_son(son_id)
+    def get_cosmonaut(self, cosmonaut_id: int) -> Cosmonaut:
+        return self._service.find(cosmonaut_id)
 
-    def delete_son(self, son_id: int) -> None:
-        self._service.expel_son(son_id)
+    def expel(self, cosmonaut_id: int) -> None:
+        self._service.expel(cosmonaut_id)

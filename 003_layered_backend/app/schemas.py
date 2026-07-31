@@ -3,16 +3,17 @@
 from pydantic import BaseModel, Field
 
 
-class SonCreate(BaseModel):
-    """То, что присылает фронт при создании."""
+class CosmonautCreate(BaseModel):
+    """То, что присылает фронт при зачислении в отряд."""
 
     name: str = Field(min_length=1, max_length=100)
-    age: int = Field(ge=0, le=150)
+    age: int = Field(ge=18, le=100)
 
 
-class Son(BaseModel):
+class Cosmonaut(BaseModel):
     """То, что возвращаем наружу (уже с id из базы)."""
 
     id: int
     name: str
     age: int
+    in_space: bool = False

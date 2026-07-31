@@ -1,34 +1,34 @@
 """LOGIC — классы, которые делают бизнес-логику.
 
-Не знает ни про HTTP, ни про SQL: сверху View, снизу интерфейс SonRepo.
+Не знает ни про HTTP, ни про SQL: сверху View, снизу интерфейс CosmonautRepo.
 """
 
-from app.repo import SonRepo
-from app.schemas import Son, SonCreate
+from app.repo import CosmonautRepo
+from app.schemas import Cosmonaut, CosmonautCreate
 
 
-class SonNotFoundError(Exception):
+class CosmonautNotFoundError(Exception):
     pass
 
 
-class SonService:
-    def __init__(self, repo: SonRepo) -> None:
+class CosmonautService:
+    def __init__(self, repo: CosmonautRepo) -> None:
         self._repo = repo
 
-    def register_son(self, data: SonCreate) -> Son:
+    def enroll(self, data: CosmonautCreate) -> Cosmonaut:
         # Бизнес-правило: имя храним нормализованным.
         normalized = data.model_copy(update={"name": data.name.strip().title()})
         return self._repo.add(normalized)
 
-    def find_son(self, son_id: int) -> Son:
-        son = self._repo.get(son_id)
-        if son is None:
-            raise SonNotFoundError(f"Сын #{son_id} не найден")
-        return son
+    def find(self, cosmonaut_id: int) -> Cosmonaut:
+        cosmonaut = self._repo.get(cosmonaut_id)
+        if cosmonaut is None:
+            raise CosmonautNotFoundError(f"Космонавт #{cosmonaut_id} не найден")
+        return cosmonaut
 
-    def all_sons(self) -> list[Son]:
+    def all(self) -> list[Cosmonaut]:
         return self._repo.list_all()
 
-    def expel_son(self, son_id: int) -> None:
-        if not self._repo.delete(son_id):
-            raise SonNotFoundError(f"Сын #{son_id} не найден")
+    def expel(self, cosmonaut_id: int) -> None:
+        if not self._repo.delete(cosmonaut_id):
+            raise CosmonautNotFoundError(f"Космонавт #{cosmonaut_id} не найден")

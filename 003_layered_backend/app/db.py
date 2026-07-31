@@ -2,7 +2,7 @@
 
 import sqlite3
 
-DB_PATH = "sons.sqlite3"
+DB_PATH = "cosmonauts.sqlite3"
 
 
 def get_connection(path: str = DB_PATH) -> sqlite3.Connection:
@@ -10,10 +10,11 @@ def get_connection(path: str = DB_PATH) -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row  # строки как dict-подобные объекты
     conn.execute(
         """
-        CREATE TABLE IF NOT EXISTS sons (
-            id   INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT    NOT NULL,
-            age  INTEGER NOT NULL
+        CREATE TABLE IF NOT EXISTS cosmonauts (
+            id       INTEGER PRIMARY KEY AUTOINCREMENT,
+            name     TEXT    NOT NULL,
+            age      INTEGER NOT NULL,
+            in_space INTEGER NOT NULL DEFAULT 0
         )
         """
     )
