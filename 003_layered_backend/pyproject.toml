@@ -1,0 +1,9 @@
+[project]
+name = "003-layered-backend"
+version = "0.1.0"
+description = "Layered backend: VIEW -> LOGIC -> REPO -> DB"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.115",
+]
