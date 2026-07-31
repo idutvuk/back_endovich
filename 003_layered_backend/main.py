@@ -1,31 +1,27 @@
 """Точка сборки. Слои соединяются здесь и только здесь:
 
-USER -> FRONT -> [ VIEW -> LOGIC -> REPO ] -> DB
-                      (этот бэкэнд)
+USER -> FRONT -> [ VIEWS -> CORE -> REPOSITORY ] -> DB
+                        (этот бэкэнд)
 
 Запуск:
     uv run uvicorn main:app --reload
 """
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 
-from app.db import get_connection
-from app.logic import CosmonautNotFoundError, CosmonautService
-from app.repo import SqliteCosmonautRepo
-from app.views import CosmonautViews
+from app.core.services import CosmonautService, MissionService
+from app.repository.db import get_connection
+from app.repository.sqlite import SqliteCosmonautRepo
+from app.views.cosmonauts import CosmonautViews
+from app.views.errors import register_error_handlers
 
-# Сборка снизу вверх: DB -> REPO -> LOGIC -> VIEW.
+# Сборка снизу вверх: DB -> REPOSITORY -> CORE -> VIEWS.
 connection = get_connection()
 repo = SqliteCosmonautRepo(connection)
-service = CosmonautService(repo)
-views = CosmonautViews(service)
+cosmonauts = CosmonautService(repo)
+missions = MissionService(repo)
+views = CosmonautViews(cosmonauts, missions)
 
-app = FastAPI(title="003 Layered Backend")
+app = FastAPI(title="003 Layered Backend — Центр подготовки космонавтов")
 app.include_router(views.router)
-
-
-@app.exception_handler(CosmonautNotFoundError)
-def cosmonaut_not_found(_: Request, exc: CosmonautNotFoundError) -> JSONResponse:
-    # Ошибка логики превращается в HTTP-ответ на границе приложения.
-    return JSONResponse(status_code=404, content={"detail": str(exc)})
+register_error_handlers(app)

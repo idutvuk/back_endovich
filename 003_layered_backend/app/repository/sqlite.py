@@ -1,27 +1,12 @@
-"""REPO — классы, которые разговаривают с БД. SQL живёт только здесь.
+"""REPOSITORY — классы, которые разговаривают с БД. SQL живёт только здесь.
 
-Интерфейс (Protocol) отделяет ЛОГИКУ от конкретной базы:
-логика знает только контракт CosmonautRepo, а не sqlite.
+Реализует интерфейс CosmonautRepo из core (сам интерфейс лежит в core —
+ядро диктует контракт, реализация подстраивается).
 """
 
 import sqlite3
-from typing import Protocol
 
-from app.schemas import Cosmonaut, CosmonautCreate
-
-
-class CosmonautRepo(Protocol):
-    """Интерфейс репозитория. Логика зависит от него, а не от sqlite."""
-
-    def add(self, cosmonaut: CosmonautCreate) -> Cosmonaut: ...
-
-    def get(self, cosmonaut_id: int) -> Cosmonaut | None: ...
-
-    def list_all(self) -> list[Cosmonaut]: ...
-
-    def set_in_space(self, cosmonaut_id: int, in_space: bool) -> None: ...
-
-    def delete(self, cosmonaut_id: int) -> bool: ...
+from app.core.models import Cosmonaut, CosmonautCreate
 
 
 def _to_model(row: sqlite3.Row) -> Cosmonaut:
@@ -31,7 +16,7 @@ def _to_model(row: sqlite3.Row) -> Cosmonaut:
 
 
 class SqliteCosmonautRepo:
-    """Реализация интерфейса поверх sqlite. Запросы в базу — только тут."""
+    """Реализация CosmonautRepo поверх sqlite. Запросы в базу — только тут."""
 
     def __init__(self, conn: sqlite3.Connection) -> None:
         self._conn = conn
@@ -51,10 +36,13 @@ class SqliteCosmonautRepo:
         ).fetchone()
         return _to_model(row) if row else None
 
-    def list_all(self) -> list[Cosmonaut]:
-        rows = self._conn.execute(
-            "SELECT id, name, age, in_space FROM cosmonauts"
-        ).fetchall()
+    def list_all(self, in_space: bool | None = None) -> list[Cosmonaut]:
+        query = "SELECT id, name, age, in_space FROM cosmonauts"
+        params: tuple = ()
+        if in_space is not None:
+            query += " WHERE in_space = ?"
+            params = (int(in_space),)
+        rows = self._conn.execute(query, params).fetchall()
         return [_to_model(row) for row in rows]
 
     def set_in_space(self, cosmonaut_id: int, in_space: bool) -> None:
