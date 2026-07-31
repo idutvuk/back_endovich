@@ -1,7 +1,10 @@
-"""Точка сборки. Слои соединяются здесь и только здесь:
+"""Точка сборки:
 
 USER -> FRONT -> [ VIEWS -> CORE -> REPOSITORY ] -> DB
                         (этот бэкэнд)
+
+Цепочка DB -> REPO -> LOGIC собирается на каждый запрос
+через Depends (см. app/views/deps.py).
 
 Запуск:
     uv run uvicorn main:app --reload
@@ -9,19 +12,10 @@ USER -> FRONT -> [ VIEWS -> CORE -> REPOSITORY ] -> DB
 
 from fastapi import FastAPI
 
-from app.core.services import CosmonautService, MissionService
-from app.repository.db import get_connection
-from app.repository.sqlite import SqliteCosmonautRepo
-from app.views.cosmonauts import CosmonautViews
-from app.views.errors import register_error_handlers
+from app.repository.db import create_tables
+from app.views.cosmonauts import router
 
-# Сборка снизу вверх: DB -> REPOSITORY -> CORE -> VIEWS.
-connection = get_connection()
-repo = SqliteCosmonautRepo(connection)
-cosmonauts = CosmonautService(repo)
-missions = MissionService(repo)
-views = CosmonautViews(cosmonauts, missions)
+create_tables()
 
 app = FastAPI(title="003 Layered Backend — Центр подготовки космонавтов")
-app.include_router(views.router)
-register_error_handlers(app)
+app.include_router(router)

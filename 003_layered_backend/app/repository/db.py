@@ -1,22 +1,33 @@
-"""DB — место, где лежат данные. Здесь: создание соединения и схемы таблиц."""
+"""DB — место, где лежат данные.
 
-import sqlite3
+Здесь: движок SQLAlchemy, фабрика сессий и ORM-описание таблиц.
+"""
 
-DB_PATH = "cosmonauts.sqlite3"
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
+
+DB_URL = "sqlite:///cosmonauts.sqlite3"
 
 
-def get_connection(path: str = DB_PATH) -> sqlite3.Connection:
-    conn = sqlite3.connect(path, check_same_thread=False)
-    conn.row_factory = sqlite3.Row  # строки как dict-подобные объекты
-    conn.execute(
-        """
-        CREATE TABLE IF NOT EXISTS cosmonauts (
-            id       INTEGER PRIMARY KEY AUTOINCREMENT,
-            name     TEXT    NOT NULL,
-            age      INTEGER NOT NULL,
-            in_space INTEGER NOT NULL DEFAULT 0
-        )
-        """
-    )
-    conn.commit()
-    return conn
+class Base(DeclarativeBase):
+    pass
+
+
+class CosmonautRow(Base):
+    """Строка таблицы. Не путать с доменной моделью Cosmonaut (pydantic):
+    эта — про хранение, та — про предметную область."""
+
+    __tablename__ = "cosmonauts"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    age: Mapped[int]
+    in_space: Mapped[bool] = mapped_column(default=False)
+
+
+engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(bind=engine)
+
+
+def create_tables() -> None:
+    Base.metadata.create_all(engine)

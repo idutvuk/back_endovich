@@ -1,47 +1,82 @@
-"""VIEWS — классы, которые обрабатывают запросы.
+"""VIEWS — функции, которые обрабатывают запросы (декораторы FastAPI).
 
 Знает только HTTP: принял запрос -> дёрнул логику -> вернул ответ.
+Ошибки предметной области ловим прямо тут и превращаем в HTTPException.
 Никакой бизнес-логики и никакого SQL здесь нет.
 """
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
 from app.core.models import Cosmonaut, CosmonautCreate
 from app.core.services import CosmonautService, MissionService
+from app.views.deps import get_cosmonaut_service, get_mission_service
+
+router = APIRouter(prefix="/cosmonauts", tags=["cosmonauts"])
 
 
-class CosmonautViews:
-    def __init__(
-        self, cosmonauts: CosmonautService, missions: MissionService
-    ) -> None:
-        self._cosmonauts = cosmonauts
-        self._missions = missions
-        self.router = APIRouter(prefix="/cosmonauts", tags=["cosmonauts"])
-        # Те самые декораторы FastAPI, применённые к методам класса.
-        self.router.post("", status_code=status.HTTP_201_CREATED)(self.enroll)
-        self.router.get("")(self.roster)
-        self.router.get("/{cosmonaut_id}")(self.get_cosmonaut)
-        self.router.delete("/{cosmonaut_id}", status_code=status.HTTP_204_NO_CONTENT)(
-            self.expel
-        )
-        self.router.post("/{cosmonaut_id}/launch")(self.launch)
-        self.router.post("/{cosmonaut_id}/land")(self.land)
+@router.post("", status_code=status.HTTP_201_CREATED)
+def enroll(
+    data: CosmonautCreate,
+    service: CosmonautService = Depends(get_cosmonaut_service),
+) -> Cosmonaut:
+    return service.enroll(data)
 
-    def enroll(self, data: CosmonautCreate) -> Cosmonaut:
-        return self._cosmonauts.enroll(data)
 
-    def roster(self, in_space: bool | None = None) -> list[Cosmonaut]:
-        """GET /cosmonauts?in_space=true — фильтр по тем, кто на орбите."""
-        return self._cosmonauts.roster(in_space)
+@router.get("")
+def roster(
+    in_space: bool | None = None,
+    service: CosmonautService = Depends(get_cosmonaut_service),
+) -> list[Cosmonaut]:
+    """GET /cosmonauts?in_space=true — фильтр по тем, кто на орбите."""
+    return service.roster(in_space)
 
-    def get_cosmonaut(self, cosmonaut_id: int) -> Cosmonaut:
-        return self._cosmonauts.find(cosmonaut_id)
 
-    def expel(self, cosmonaut_id: int) -> None:
-        self._cosmonauts.expel(cosmonaut_id)
+@router.get("/{cosmonaut_id}")
+def get_cosmonaut(
+    cosmonaut_id: int,
+    service: CosmonautService = Depends(get_cosmonaut_service),
+) -> Cosmonaut:
+    try:
+        return service.find(cosmonaut_id)
+    except CosmonautNotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
 
-    def launch(self, cosmonaut_id: int) -> Cosmonaut:
-        return self._missions.launch(cosmonaut_id)
 
-    def land(self, cosmonaut_id: int) -> Cosmonaut:
-        return self._missions.land(cosmonaut_id)
+@router.delete("/{cosmonaut_id}", status_code=status.HTTP_204_NO_CONTENT)
+def expel(
+    cosmonaut_id: int,
+    service: CosmonautService = Depends(get_cosmonaut_service),
+) -> None:
+    try:
+        service.expel(cosmonaut_id)
+    except CosmonautNotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+    except MissionConflictError as exc:
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
+
+
+@router.post("/{cosmonaut_id}/launch")
+def launch(
+    cosmonaut_id: int,
+    service: MissionService = Depends(get_mission_service),
+) -> Cosmonaut:
+    try:
+        return service.launch(cosmonaut_id)
+    except CosmonautNotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+    except MissionConflictError as exc:
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
+
+
+@router.post("/{cosmonaut_id}/land")
+def land(
+    cosmonaut_id: int,
+    service: MissionService = Depends(get_mission_service),
+) -> Cosmonaut:
+    try:
+        return service.land(cosmonaut_id)
+    except CosmonautNotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+    except MissionConflictError as exc:
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))

@@ -5,26 +5,28 @@
 ## Структура
 
 ```
-main.py                     # сборка: единственное место, где слои узнают друг о друге
+main.py                     # создание приложения + create_tables()
 app/
-├── views/                  # VIEW: классы, которые обрабатывают запросы (только HTTP)
-│   ├── cosmonauts.py       #   роутер + хэндлеры
-│   └── errors.py           #   перевод ошибок core в HTTP-статусы
+├── views/                  # VIEW: обработка запросов (только HTTP)
+│   ├── cosmonauts.py       #   функции с декораторами @router, ошибки -> HTTPException
+│   └── deps.py             #   Depends: сборка DB -> REPO -> LOGIC на каждый запрос
 ├── core/                   # LOGIC: бизнес-логика (не знает ни HTTP, ни SQL)
-│   ├── models.py           #   DTO (pydantic)
+│   ├── models.py           #   доменные модели (pydantic)
 │   ├── services.py         #   CosmonautService, MissionService
 │   ├── interfaces.py       #   контракт CosmonautRepo (Protocol)
 │   └── exceptions.py       #   ошибки предметной области
-└── repository/             # REPO: классы, которые разговаривают с БД (весь SQL тут)
-    ├── db.py               #   соединение + схема таблиц (sqlite)
-    └── sqlite.py           #   SqliteCosmonautRepo — реализация контракта
+└── repository/             # REPO: разговор с БД (весь SQL/ORM тут)
+    ├── db.py               #   движок SQLAlchemy, сессии, ORM-таблица CosmonautRow
+    └── orm.py              #   SqlAlchemyCosmonautRepo — реализация контракта
 ```
 
 Ключевые идеи:
 - Интерфейс `CosmonautRepo` лежит в `core`, реализация — в `repository`.
   Ядро диктует контракт (инверсия зависимостей); базу можно заменить, не трогая логику.
-- Ошибки (`CosmonautNotFoundError`, `MissionConflictError`) бросает core,
-  в 404/409 их превращает `views/errors.py`.
+- Две разные "модели": `CosmonautRow` (ORM, про хранение) и `Cosmonaut`
+  (pydantic, про предметную область). Репозиторий переводит одну в другую.
+- Ошибки core (`CosmonautNotFoundError`, `MissionConflictError`) хэндлеры
+  ловят через try/except и бросают `HTTPException` с 404/409.
 
 ## Запуск
 
