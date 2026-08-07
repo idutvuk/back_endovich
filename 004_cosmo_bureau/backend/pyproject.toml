@@ -1,0 +1,10 @@
+[project]
+name = "cosmo-bureau-backend"
+version = "0.1.0"
+description = "Бюро космонавтики им. Героя России Синса — бэкэнд управления полётами"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.115",
+    "sqlalchemy>=2.0",
+]
