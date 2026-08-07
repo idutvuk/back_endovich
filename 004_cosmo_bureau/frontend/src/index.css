@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Unbounded', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+
+  /* ЦУП: глубокий космос + янтарные пульты + фосфорная телеметрия */
+  --color-void: #060a13;
+  --color-panel: #0c1322;
+  --color-panel-2: #111a2e;
+  --color-line: #1d2a45;
+  --color-line-2: #2a3b60;
+  --color-amber: #ffb545;
+  --color-amber-dim: #b97f2a;
+  --color-phosphor: #5df0a2;
+  --color-signal: #ff5c5c;
+  --color-sky: #6fb7ff;
+  --color-ink: #dbe4f5;
+  --color-ink-dim: #7f8fb0;
+}
+
+html {
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, #0e1a35 0%, transparent 60%),
+    var(--color-void);
+}
+
+/* звёздное небо */
+.starfield::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 12% 25%, #ffffff88 50%, transparent 50%),
+    radial-gradient(1px 1px at 78% 12%, #ffffff55 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 33% 68%, #ffffff66 50%, transparent 50%),
+    radial-gradient(1px 1px at 56% 42%, #ffffff44 50%, transparent 50%),
+    radial-gradient(1px 1px at 91% 80%, #ffffff77 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 8% 89%, #ffffff44 50%, transparent 50%),
+    radial-gradient(1px 1px at 45% 8%, #ffffff66 50%, transparent 50%),
+    radial-gradient(1px 1px at 67% 91%, #ffffff33 50%, transparent 50%);
+  z-index: 0;
+}
+
+/* сканлайны мониторов ЦУП */
+.crt::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg, transparent 0 2px, #00000018 2px 4px
+  );
+  z-index: 50;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+.blink { animation: blink 1.6s step-end infinite; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@keyframes launch-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-2px, 1px); }
+  40% { transform: translate(2px, -1px); }
+  60% { transform: translate(-1px, -2px); }
+  80% { transform: translate(1px, 2px); }
+}
+.launch-shake { animation: launch-shake 0.35s linear 3; }
+
+@keyframes assemble {
+  0% { opacity: 0; transform: translateY(30px) scale(0.8); filter: blur(6px); }
+  60% { filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.assemble { animation: assemble 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
