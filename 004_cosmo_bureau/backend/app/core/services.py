@@ -4,13 +4,14 @@
 """
 
 import math
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from app.core import orbits
 from app.core.exceptions import ConflictError, InsufficientResourcesError, NotFoundError
 from app.core.models import (
     Cosmonaut,
     CosmonautCreate,
+    CosmonautDTO,
     Mission,
     MissionCreate,
     MissionStatus,
@@ -71,22 +72,35 @@ def position_of(orbit: Orbit, at: datetime | None = None) -> OrbitPosition:
     )
 
 
+def _age_of(birth_date: date, today: date | None = None) -> int:
+    today = today or date.today()
+    return (
+        today.year
+        - birth_date.year
+        - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    )
+
+
+def _enrich(cosmonaut: Cosmonaut) -> CosmonautDTO:
+    return CosmonautDTO(**cosmonaut.model_dump(), age=_age_of(cosmonaut.birth_date))
+
+
 class CosmonautService:
     def __init__(self, repo: CosmonautRepo) -> None:
         self._repo = repo
 
-    def enroll(self, data: CosmonautCreate) -> Cosmonaut:
+    def enroll(self, data: CosmonautCreate) -> CosmonautDTO:
         normalized = data.model_copy(update={"name": data.name.strip()})
-        return self._repo.add(normalized)
+        return _enrich(self._repo.add(normalized))
 
-    def find(self, cosmonaut_id: int) -> Cosmonaut:
+    def find(self, cosmonaut_id: int) -> CosmonautDTO:
         cosmonaut = self._repo.get(cosmonaut_id)
         if cosmonaut is None:
             raise NotFoundError("Космонавт", cosmonaut_id)
-        return cosmonaut
+        return _enrich(cosmonaut)
 
-    def roster(self, **filters: object) -> list[Cosmonaut]:
-        return self._repo.list_all(**filters)
+    def roster(self, **filters: object) -> list[CosmonautDTO]:
+        return [_enrich(c) for c in self._repo.list_all(**filters)]
 
     def expel(self, cosmonaut_id: int) -> None:
         if self.find(cosmonaut_id).in_space:

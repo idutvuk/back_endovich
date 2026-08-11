@@ -3,7 +3,7 @@
 
 import type { CSSProperties } from 'react'
 import type { Cosmonaut } from '../lib/api'
-import { avatarHue, initials } from '../lib/labels'
+import { ageRu, avatarHue, initials } from '../lib/labels'
 import { Badge } from './ui/badge'
 import { Card } from './ui/card'
 
@@ -26,6 +26,7 @@ export function CosmonautCard({ cosmonaut, style }: { cosmonaut: Cosmonaut; styl
         <div className="font-mono text-[11px] text-ink-dim">
           {cosmonaut.country} · {cosmonaut.zodiac} ·{' '}
           {new Date(cosmonaut.birth_date).toLocaleDateString('ru-RU')}
+          {cosmonaut.age != null && <> · {ageRu(cosmonaut.age)}</>}
         </div>
       </div>
       {cosmonaut.in_space ? (

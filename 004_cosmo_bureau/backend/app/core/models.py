@@ -63,6 +63,12 @@ class Cosmonaut(CosmonautCreate):
     rocket_id: int | None = None
 
 
+class CosmonautDTO(Cosmonaut):
+    """Наружу (в views) космонавт уходит обогащённым: возраст считается в core."""
+
+    age: int
+
+
 # --- Станции ---
 
 

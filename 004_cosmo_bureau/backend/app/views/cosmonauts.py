@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, status
 
-from app.core.models import Cosmonaut, CosmonautCreate
+from app.core.models import CosmonautCreate, CosmonautDTO
 from app.views.deps import CosmonautsDep
 
 router = APIRouter(prefix="/cosmonauts", tags=["cosmonauts"])
@@ -16,7 +16,7 @@ def list_cosmonauts(
     in_space: bool | None = None,
     station_id: int | None = None,
     zodiac: str | None = None,
-) -> list[Cosmonaut]:
+) -> list[CosmonautDTO]:
     roster = service.roster(
         name=name, country=country, in_space=in_space, station_id=station_id
     )
@@ -26,12 +26,12 @@ def list_cosmonauts(
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def enroll_cosmonaut(data: CosmonautCreate, service: CosmonautsDep) -> Cosmonaut:
+def enroll_cosmonaut(data: CosmonautCreate, service: CosmonautsDep) -> CosmonautDTO:
     return service.enroll(data)
 
 
 @router.get("/{cosmonaut_id}")
-def get_cosmonaut(cosmonaut_id: int, service: CosmonautsDep) -> Cosmonaut:
+def get_cosmonaut(cosmonaut_id: int, service: CosmonautsDep) -> CosmonautDTO:
     return service.find(cosmonaut_id)
 
 
