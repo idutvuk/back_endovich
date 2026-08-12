@@ -17,5 +17,7 @@ from app.views.cosmonauts import router
 
 create_tables()
 
+# HelloWorld("print")
+
 app = FastAPI(title="003 Layered Backend — Центр подготовки космонавтов")
 app.include_router(router)
