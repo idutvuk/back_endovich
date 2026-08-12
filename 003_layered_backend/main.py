@@ -10,6 +10,8 @@ USER -> FRONT -> [ VIEWS -> CORE -> REPOSITORY ] -> DB
     uv run uvicorn main:app --reload
 """
 
+# AAAAAAAAAAAAa
+
 from fastapi import FastAPI
 
 from app.repository.db import create_tables
