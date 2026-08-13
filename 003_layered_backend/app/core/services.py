@@ -46,16 +46,14 @@ class MissionService:
         if cosmonaut.in_space:
             raise MissionConflictError(f"Космонавт #{cosmonaut_id} уже в космосе")
         self._repo.set_in_space(cosmonaut_id, True)
-        cosmonaut.name += '_67'
-        return cosmonaut.model_copy(update={"in_space": True, "name": cosmonaut.name})
+        return cosmonaut.model_copy(update={"in_space": True})
 
     def land(self, cosmonaut_id: int) -> Cosmonaut:
         cosmonaut = self._get(cosmonaut_id)
         if not cosmonaut.in_space:
             raise MissionConflictError(f"Космонавт #{cosmonaut_id} и так на Земле")
-        cosmonaut.name = cosmonaut.name.split('_')[0]
         self._repo.set_in_space(cosmonaut_id, False)
-        return cosmonaut.model_copy(update={"in_space": False, "name": cosmonaut.name.split('_67')[0]})
+        return cosmonaut.model_copy(update={"in_space": False})
 
     def _get(self, cosmonaut_id: int) -> Cosmonaut:
         cosmonaut = self._repo.get(cosmonaut_id)

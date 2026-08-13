@@ -42,11 +42,6 @@ class SqlAlchemyCosmonautRepo:
         row = self._session.get(CosmonautRow, cosmonaut_id)
         if row is not None:
             row.in_space = in_space
-            if in_space:
-                row.name += '_67'
-            else:
-                if row.name.endswith('_67'):
-                    row.name = row.name.split('_67')[0]
             self._session.commit()
 
     def delete(self, cosmonaut_id: int) -> bool:
@@ -56,4 +51,3 @@ class SqlAlchemyCosmonautRepo:
         self._session.delete(row)
         self._session.commit()
         return True
-# sqlite3 cosmonauts.sqlite3 -header -column
