@@ -40,6 +40,7 @@ class SqlAlchemyCosmonautRepo:
 
     def set_in_space(self, cosmonaut_id: int, in_space: bool) -> None:
         row = self._session.get(CosmonautRow, cosmonaut_id)
+
         if row is not None:
             row.in_space = in_space
             self._session.commit()
