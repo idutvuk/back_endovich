@@ -38,10 +38,16 @@ class SqlAlchemyCosmonautRepo:
         rows = self._session.scalars(query).all()
         return [_to_model(row) for row in rows]
 
-    def set_in_space(self, cosmonaut_id: int, in_space: bool) -> None:
+    def set_in_space(self, cosmonaut_id: int, in_space: bool,) -> None:
         row = self._session.get(CosmonautRow, cosmonaut_id)
         if row is not None:
             row.in_space = in_space
+            self._session.commit()
+
+    def set_name(self, cosmonaut_id:int, new_name:str) -> None:
+        row = self._session.get(CosmonautRow, cosmonaut_id)
+        if row is not None:
+            row.name = new_name
             self._session.commit()
 
     def delete(self, cosmonaut_id: int) -> bool:

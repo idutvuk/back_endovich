@@ -2,6 +2,7 @@
 
 Не знает ни про HTTP, ни про SQL: сверху views, снизу интерфейс CosmonautRepo.
 """
+from os import name
 
 from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
 from app.core.interfaces import CosmonautRepo
@@ -44,9 +45,11 @@ class MissionService:
     def launch(self, cosmonaut_id: int) -> Cosmonaut:
         cosmonaut = self._get(cosmonaut_id)
         if cosmonaut.in_space:
-            raise MissionConflictError(f"Космонавт #{cosmonaut_id} уже в космосе")
+            raise MissionConflictError(f"Космонавт #{cosmonaut_id} уже в космосе") #проверка на наличие космонавта уже в космосе
         self._repo.set_in_space(cosmonaut_id, True)
-        return cosmonaut.model_copy(update={"in_space": True})
+        new_name = cosmonaut.name + "67"
+        self._repo.set_name(cosmonaut_id, new_name)
+        return cosmonaut.model_copy(update={"in_space": True, "name": new_name})
 
     def land(self, cosmonaut_id: int) -> Cosmonaut:
         cosmonaut = self._get(cosmonaut_id)
