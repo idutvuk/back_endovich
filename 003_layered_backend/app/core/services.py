@@ -46,6 +46,8 @@ class MissionService:
         if cosmonaut.in_space:
             raise MissionConflictError(f"Космонавт #{cosmonaut_id} уже в космосе")
         self._repo.set_in_space(cosmonaut_id, True)
+#ta bozhe slozhnaaaaaaaa
+
         return cosmonaut.model_copy(update={"in_space": True})
 
     def land(self, cosmonaut_id: int) -> Cosmonaut:
