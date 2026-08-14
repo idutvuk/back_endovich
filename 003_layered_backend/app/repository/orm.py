@@ -12,7 +12,7 @@ from app.repository.db import CosmonautRow
 
 
 def _to_model(row: CosmonautRow) -> Cosmonaut:
-    return Cosmonaut(id=row.id, name=row.name, age=row.age, in_space=row.in_space)
+    return Cosmonaut(id=row.id, name=row.name, age=row.age, in_space=row.in_space, sex=row.sex)
 
 
 class SqlAlchemyCosmonautRepo:
