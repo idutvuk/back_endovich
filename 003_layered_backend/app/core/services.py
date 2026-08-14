@@ -34,6 +34,7 @@ class CosmonautService:
                 f"Космонавт #{cosmonaut_id} на орбите — сначала верните его"
             )
         self._repo.delete(cosmonaut_id)
+        return 'Privet jzhfljhjoigr'
 
 
 class MissionService:
