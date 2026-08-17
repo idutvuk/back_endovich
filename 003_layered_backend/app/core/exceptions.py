@@ -16,3 +16,8 @@ class CosmonautNotFoundError(DomainError):
 
 class MissionConflictError(DomainError):
     """Действие противоречит текущему состоянию космонавта."""
+
+class AgeConflictError(DomainError):
+    """;jgfgf"""
+
+

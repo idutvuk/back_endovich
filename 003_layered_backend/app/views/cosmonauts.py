@@ -7,7 +7,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
+from app.core.exceptions import CosmonautNotFoundError, MissionConflictError, AgeConflictError
 from app.core.models import Cosmonaut, CosmonautCreate
 from app.core.services import CosmonautService, MissionService
 from app.views.deps import get_cosmonaut_service, get_mission_service
@@ -79,4 +79,17 @@ def land(
     except CosmonautNotFoundError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
     except MissionConflictError as exc:
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
+
+@router.post("/{cosmonaut_id}/Change_age")
+def Change_age(
+    cosmonaut_id: int,
+    age: int,
+    service: MissionService = Depends(get_mission_service),
+) -> Cosmonaut:
+    try:
+        return service.Change_age(cosmonaut_id, age)
+    except CosmonautNotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+    except AgeConflictError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
