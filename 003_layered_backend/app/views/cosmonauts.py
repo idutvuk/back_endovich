@@ -92,4 +92,4 @@ def set_age(
     except CosmonautNotFoundError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
     except InvalidCosmonautAge as exc:
-        raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(exc))
