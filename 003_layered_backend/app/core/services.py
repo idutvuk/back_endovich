@@ -2,6 +2,7 @@
 
 Не знает ни про HTTP, ни про SQL: сверху views, снизу интерфейс CosmonautRepo.
 """
+from dns import update
 
 from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
 from app.core.interfaces import CosmonautRepo
@@ -60,3 +61,8 @@ class MissionService:
         if cosmonaut is None:
             raise CosmonautNotFoundError(cosmonaut_id)
         return cosmonaut
+
+    def age_change(self, cosmonaut_id: int, new_age) -> Cosmonaut:
+        cosmonaut = self._get(cosmonaut_id)
+        self._repo.set_age(cosmonaut_id, new_age)
+        return cosmonaut.model_copy(update={"age": new_age})
