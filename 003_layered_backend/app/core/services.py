@@ -34,6 +34,9 @@ class CosmonautService:
             )
         self._repo.delete(cosmonaut_id)
 
+    def reducter_age(self, cosmonaut_id: int, age: int) -> None:
+
+        self._repo.reducter_age(cosmonaut_id, age)
 
 class MissionService:
     """Запуск и возвращение. Отдельный класс: другая зона ответственности."""

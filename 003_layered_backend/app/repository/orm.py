@@ -44,6 +44,11 @@ class SqlAlchemyCosmonautRepo:
             row.in_space = in_space
             self._session.commit()
 
+    def reducter_age(self, cosmonaut_id: int, new_age: int):
+        row = self._session.get(CosmonautRow, cosmonaut_id)
+        row.age = new_age
+        self._session.commit()
+
     def delete(self, cosmonaut_id: int) -> bool:
         row = self._session.get(CosmonautRow, cosmonaut_id)
         if row is None:
