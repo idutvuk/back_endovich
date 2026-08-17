@@ -17,3 +17,5 @@ class Cosmonaut(BaseModel):
     name: str
     age: int
     in_space: bool = False
+    sex: str
+

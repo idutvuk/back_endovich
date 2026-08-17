@@ -23,6 +23,7 @@ class CosmonautRow(Base):
     name: Mapped[str]
     age: Mapped[int]
     in_space: Mapped[bool] = mapped_column(default=False)
+    sex: Mapped[str]
 
 
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
