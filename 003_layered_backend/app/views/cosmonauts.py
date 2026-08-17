@@ -68,6 +68,14 @@ def launch(
     except MissionConflictError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
 
+@router.post("/{cosmonaut_id}/smena_vozrasta")
+def smena_vozrasta(
+    cosmonaut_id: int,
+    new_age: int,
+    service: MissionService = Depends(get_mission_service),
+) -> None:
+    service.smena_vozrasta(cosmonaut_id,new_age)
+
 
 @router.post("/{cosmonaut_id}/land")
 def land(

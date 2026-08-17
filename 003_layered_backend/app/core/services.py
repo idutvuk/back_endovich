@@ -55,6 +55,10 @@ class MissionService:
         self._repo.set_in_space(cosmonaut_id, False)
         return cosmonaut.model_copy(update={"in_space": False})
 
+    def smena_vozrasta(self, cosmonaut_id: int, vozrast: int) -> None:
+        cosmonaut = self._get(cosmonaut_id)
+        self._repo.set_age(cosmonaut_id, vozrast)
+
     def _get(self, cosmonaut_id: int) -> Cosmonaut:
         cosmonaut = self._repo.get(cosmonaut_id)
         if cosmonaut is None:

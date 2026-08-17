@@ -44,6 +44,12 @@ class SqlAlchemyCosmonautRepo:
             row.in_space = in_space
             self._session.commit()
 
+    def set_age(self, cosmonaut_id: int, vozrast: int) -> None:
+        row = self._session.get(CosmonautRow, cosmonaut_id)
+        if row is not None:
+            row.age = vozrast
+            self._session.commit()
+
     def delete(self, cosmonaut_id: int) -> bool:
         row = self._session.get(CosmonautRow, cosmonaut_id)
         if row is None:
