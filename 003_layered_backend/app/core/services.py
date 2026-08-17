@@ -12,6 +12,12 @@ class CosmonautService:
     def __init__(self, repo: CosmonautRepo) -> None:
         self._repo = repo
 
+    def _get(self, cosmonaut_id: int) -> Cosmonaut:
+        cosmonaut = self._repo.get(cosmonaut_id)
+        if cosmonaut is None:
+            raise CosmonautNotFoundError(cosmonaut_id)
+        return cosmonaut
+
     def enroll(self, data: CosmonautCreate) -> Cosmonaut:
         # Бизнес-правило: имя храним нормализованным.
         normalized = data.model_copy(update={"name": data.name.strip().title()})
@@ -34,6 +40,14 @@ class CosmonautService:
             )
         self._repo.delete(cosmonaut_id)
 
+    def change_age(self, cosmonaut_id: int, new_age: int) -> Cosmonaut:
+        cosmonaut = self._get(cosmonaut_id)
+        if (18 <= new_age <= 100) == False:
+            raise MissionConflictError(f"Космонавт #{cosmonaut_id} умрет")
+        self._repo.change_age(cosmonaut_id, new_age)
+        return cosmonaut.model_copy(update={"age": new_age})
+
+
 
 class MissionService:
     """Запуск и возвращение. Отдельный класс: другая зона ответственности."""
@@ -55,8 +69,6 @@ class MissionService:
         self._repo.set_in_space(cosmonaut_id, False)
         return cosmonaut.model_copy(update={"in_space": False})
 
-    def _get(self, cosmonaut_id: int) -> Cosmonaut:
-        cosmonaut = self._repo.get(cosmonaut_id)
-        if cosmonaut is None:
-            raise CosmonautNotFoundError(cosmonaut_id)
-        return cosmonaut
+
+
+
