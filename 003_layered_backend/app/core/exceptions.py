@@ -13,6 +13,8 @@ class CosmonautNotFoundError(DomainError):
     def __init__(self, cosmonaut_id: int) -> None:
         super().__init__(f"Космонавт #{cosmonaut_id} не найден")
 
+class InvalidCosmonautAge(DomainError): ...
+
 
 class MissionConflictError(DomainError):
     """Действие противоречит текущему состоянию космонавта."""

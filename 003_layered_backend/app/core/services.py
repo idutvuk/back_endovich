@@ -3,7 +3,7 @@
 Не знает ни про HTTP, ни про SQL: сверху views, снизу интерфейс CosmonautRepo.
 """
 
-from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
+from app.core.exceptions import CosmonautNotFoundError, MissionConflictError, InvalidCosmonautAge
 from app.core.interfaces import CosmonautRepo
 from app.core.models import Cosmonaut, CosmonautCreate
 
@@ -33,6 +33,19 @@ class CosmonautService:
                 f"Космонавт #{cosmonaut_id} на орбите — сначала верните его"
             )
         self._repo.delete(cosmonaut_id)
+
+    def set_age(self, cosmonaut_id : int, age: int) -> Cosmonaut:
+        if age < 18:
+            raise InvalidCosmonautAge(f"Minimum required age for cosmonaut #{cosmonaut_id} is 18")
+        if age > 100:
+            raise InvalidCosmonautAge(f"Maximum allowed age for cosmonaut #{cosmonaut_id} is 100")
+        cosmonaut = self._repo.get(cosmonaut_id)
+        if cosmonaut is None:
+            raise CosmonautNotFoundError(cosmonaut_id)
+        if cosmonaut.age == age:
+            raise InvalidCosmonautAge(f"Cosmonaut #{cosmonaut_id} is already {age} y/o")
+        self._repo.set_age(cosmonaut_id, age)
+        return cosmonaut.model_copy(update={"age": age})
 
 
 class MissionService:
