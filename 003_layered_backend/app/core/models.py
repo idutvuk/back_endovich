@@ -10,6 +10,8 @@ class CosmonautCreate(BaseModel):
     age: int = Field(ge=18, le=100)
 
 
+
+
 class Cosmonaut(BaseModel):
     """То, что возвращаем наружу (уже с id из базы)."""
 
@@ -17,3 +19,4 @@ class Cosmonaut(BaseModel):
     name: str
     age: int
     in_space: bool = False
+

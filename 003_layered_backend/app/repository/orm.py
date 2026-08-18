@@ -51,3 +51,9 @@ class SqlAlchemyCosmonautRepo:
         self._session.delete(row)
         self._session.commit()
         return True
+
+    def change_age(self, cosmonaut_id: int, age: int) -> None:
+        row = self._session.get(CosmonautRow, cosmonaut_id)
+        if row is not None:
+            row.age = age
+            self._session.commit()

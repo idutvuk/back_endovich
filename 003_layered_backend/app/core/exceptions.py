@@ -16,3 +16,8 @@ class CosmonautNotFoundError(DomainError):
 
 class MissionConflictError(DomainError):
     """Действие противоречит текущему состоянию космонавта."""
+
+class AgeConflictError(DomainError):
+    """Возраст косманавта не соответствует условиям нахождения в космосе, а также законодательству РФ на момент 18.08.2026."""
+
+

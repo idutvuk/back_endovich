@@ -3,7 +3,7 @@
 Не знает ни про HTTP, ни про SQL: сверху views, снизу интерфейс CosmonautRepo.
 """
 
-from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
+from app.core.exceptions import CosmonautNotFoundError, MissionConflictError, AgeConflictError
 from app.core.interfaces import CosmonautRepo
 from app.core.models import Cosmonaut, CosmonautCreate
 
@@ -18,10 +18,7 @@ class CosmonautService:
         return self._repo.add(normalized)
 
     def find(self, cosmonaut_id: int) -> Cosmonaut:
-        cosmonaut = self._repo.get(cosmonaut_id)
-        if cosmonaut is None:
-            raise CosmonautNotFoundError(cosmonaut_id)
-        return cosmonaut
+         return self._get(cosmonaut_id)
 
     def roster(self, in_space: bool | None = None) -> list[Cosmonaut]:
         return self._repo.list_all(in_space)
@@ -33,6 +30,22 @@ class CosmonautService:
                 f"Космонавт #{cosmonaut_id} на орбите — сначала верните его"
             )
         self._repo.delete(cosmonaut_id)
+
+    def change_age(self, cosmonaut_id: int, age: int):
+        cosmonaut = self._get(cosmonaut_id)
+        if age < 18 or age > 100:
+            raise AgeConflictError('С таким возрастом в космос не летают!200')
+        self._repo.change_age(cosmonaut_id, age)
+        return cosmonaut.model_copy(update={"age": age})
+
+    def _get(self, cosmonaut_id: int) -> Cosmonaut:
+        cosmonaut = self._repo.get(cosmonaut_id)
+        if cosmonaut is None:
+            raise CosmonautNotFoundError(cosmonaut_id)
+        return cosmonaut
+
+
+
 
 
 class MissionService:
@@ -60,3 +73,4 @@ class MissionService:
         if cosmonaut is None:
             raise CosmonautNotFoundError(cosmonaut_id)
         return cosmonaut
+
