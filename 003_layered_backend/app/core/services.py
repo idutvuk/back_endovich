@@ -26,6 +26,13 @@ class CosmonautService:
     def roster(self, in_space: bool | None = None) -> list[Cosmonaut]:
         return self._repo.list_all(in_space)
 
+    def set_age(self, cosmonaut_id: int, age: int) -> Cosmonaut:
+        cosmonaut = self.find(cosmonaut_id)
+        if cosmonaut is None:
+            raise CosmonautNotFoundError(cosmonaut_id)
+        self._repo.set_age(cosmonaut_id, age)
+        return cosmonaut.model_copy(update={"age": age})
+
     def expel(self, cosmonaut_id: int) -> None:
         # Бизнес-правило: нельзя отчислить того, кто сейчас на орбите.
         if self.find(cosmonaut_id).in_space:
@@ -54,11 +61,6 @@ class MissionService:
             raise MissionConflictError(f"Космонавт #{cosmonaut_id} и так на Земле")
         self._repo.set_in_space(cosmonaut_id, False)
         return cosmonaut.model_copy(update={"in_space": False})
-
-    def set_age(self, cosmonaut_id: int, age: int) -> Cosmonaut:
-        cosmonaut = self._get(cosmonaut_id)
-        self._repo.set_age(cosmonaut_id, age)
-        return cosmonaut.model_copy(update={"age": age})
 
     def _get(self, cosmonaut_id: int) -> Cosmonaut:
         cosmonaut = self._repo.get(cosmonaut_id)
