@@ -23,6 +23,16 @@ class CosmonautService:
             raise CosmonautNotFoundError(cosmonaut_id)
         return cosmonaut
 
+    def _get(self, cosmonaut_id: int) -> Cosmonaut:
+        cosmonaut = self._repo.get(cosmonaut_id)
+        if cosmonaut is None:
+            raise CosmonautNotFoundError(cosmonaut_id)
+        return cosmonaut
+
+    def smena_vozrasta(self, cosmonaut_id: int, vozrast: int) -> None:
+        cosmonaut = self._get(cosmonaut_id)
+        self._repo.set_age(cosmonaut_id, vozrast)
+
     def roster(self, in_space: bool | None = None) -> list[Cosmonaut]:
         return self._repo.list_all(in_space)
 
@@ -54,10 +64,6 @@ class MissionService:
             raise MissionConflictError(f"Космонавт #{cosmonaut_id} и так на Земле")
         self._repo.set_in_space(cosmonaut_id, False)
         return cosmonaut.model_copy(update={"in_space": False})
-
-    def smena_vozrasta(self, cosmonaut_id: int, vozrast: int) -> None:
-        cosmonaut = self._get(cosmonaut_id)
-        self._repo.set_age(cosmonaut_id, vozrast)
 
     def _get(self, cosmonaut_id: int) -> Cosmonaut:
         cosmonaut = self._repo.get(cosmonaut_id)

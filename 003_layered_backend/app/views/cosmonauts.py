@@ -72,7 +72,7 @@ def launch(
 def smena_vozrasta(
     cosmonaut_id: int,
     new_age: int,
-    service: MissionService = Depends(get_mission_service),
+    service: CosmonautService = Depends(get_cosmonaut_service),
 ) -> None:
     service.smena_vozrasta(cosmonaut_id,new_age)
 
