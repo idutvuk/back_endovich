@@ -8,7 +8,7 @@ class CosmonautCreate(BaseModel):
 
     name: str = Field(min_length=1, max_length=100)
     age: int = Field(ge=18, le=100)
-    sex: str = Field(min_length=1, max_length=100)
+
 
 
 class Cosmonaut(BaseModel):
