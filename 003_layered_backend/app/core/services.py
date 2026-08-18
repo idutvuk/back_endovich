@@ -26,6 +26,13 @@ class CosmonautService:
     def roster(self, in_space: bool | None = None) -> list[Cosmonaut]:
         return self._repo.list_all(in_space)
 
+    def set_age(self, cosmonaut_id: int, age: int) -> Cosmonaut:
+        cosmonaut = self.find(cosmonaut_id)
+        if cosmonaut is None:
+            raise CosmonautNotFoundError(cosmonaut_id)
+        self._repo.set_age(cosmonaut_id, age)
+        return cosmonaut.model_copy(update={"age": age})
+
     def expel(self, cosmonaut_id: int) -> None:
         # Бизнес-правило: нельзя отчислить того, кто сейчас на орбите.
         if self.find(cosmonaut_id).in_space:

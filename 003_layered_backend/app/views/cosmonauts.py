@@ -80,3 +80,33 @@ def land(
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
     except MissionConflictError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
+
+@router.post("/{cosmonaut_id}/age/{age}", status_code=status.HTTP_202_ACCEPTED)
+def set_age(
+    cosmonaut_id: int,
+    age: int,
+    service: CosmonautService = Depends(get_cosmonaut_service),
+) -> Cosmonaut:
+    if age > 9000000000000000000:
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=str('Service won`t be able to handle that. (BD can`t save this)'))
+    try:
+        return service.set_age(cosmonaut_id, age)
+    except CosmonautNotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+
+"""
+FOR SOON UPDATE
+
+@router.get("/67/{count}", status_code=status.HTTP_202_ACCEPTED)
+def six_seven(
+    count: int,
+    service: MissionService = Depends(get_mission_service),
+) -> str:
+    if count < 0:
+        raise HTTPException(status.HTTP_418_IM_A_TEAPOT, detail="Negative? idk what to return. Maybe something else?")
+    elif count > 1000:
+        raise HTTPException(status.HTTP_418_IM_A_TEAPOT, detail="To many. Your page won't be able to handle it.")
+    else:
+        return '67' * count
+
+"""
