@@ -35,6 +35,12 @@ class CosmonautService:
         self._repo.delete(cosmonaut_id)
 
 
+    def age_change(self, cosmonaut_id: int, new_age: int) -> Cosmonaut:
+        cosmonaut = self.find(cosmonaut_id)
+        self._repo.set_age(cosmonaut_id, new_age)
+        return cosmonaut.model_copy(update={"age": new_age})
+
+
 class MissionService:
     """Запуск и возвращение. Отдельный класс: другая зона ответственности."""
 
@@ -60,3 +66,4 @@ class MissionService:
         if cosmonaut is None:
             raise CosmonautNotFoundError(cosmonaut_id)
         return cosmonaut
+
