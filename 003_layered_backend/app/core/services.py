@@ -36,7 +36,6 @@ class CosmonautService:
 
     def reducter_age(self, cosmonaut_id: int, age: int) -> Cosmonaut:
         cosmonaut = self._repo.get(cosmonaut_id)
-        print(1)
         if cosmonaut is None:
             raise CosmonautNotFoundError(cosmonaut_id)
             print(2)
