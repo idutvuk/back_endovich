@@ -35,17 +35,13 @@ class CosmonautService:
         self._repo.delete(cosmonaut_id)
 
     def change_age(self, cosmonaut_id: int, age: int):
-        cosmonaut = self._get(cosmonaut_id)
+        cosmonaut = self.find(cosmonaut_id)
         if age < 18 or age > 100:
             raise AgeConflictError('С таким возрастом в космос не летают!200')
         self._repo.change_age(cosmonaut_id, age)
         return cosmonaut.model_copy(update={"age": age})
 
-    def _get(self, cosmonaut_id: int) -> Cosmonaut:
-        cosmonaut = self._repo.get(cosmonaut_id)
-        if cosmonaut is None:
-            raise CosmonautNotFoundError(cosmonaut_id)
-        return cosmonaut
+
 
 
 class MissionService:
