@@ -2,8 +2,9 @@
 
 Не знает ни про HTTP, ни про SQL: сверху views, снизу интерфейс CosmonautRepo.
 """
+from sqlalchemy import false
 
-from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
+from app.core.exceptions import CosmonautNotFoundError, MissionConflictError, CosmonautChangeError
 from app.core.interfaces import CosmonautRepo
 from app.core.models import Cosmonaut, CosmonautCreate
 
@@ -11,6 +12,12 @@ from app.core.models import Cosmonaut, CosmonautCreate
 class CosmonautService:
     def __init__(self, repo: CosmonautRepo) -> None:
         self._repo = repo
+
+    def _get(self, cosmonaut_id: int) -> Cosmonaut:
+        cosmonaut = self._repo.get(cosmonaut_id)
+        if cosmonaut is None:
+            raise CosmonautNotFoundError(cosmonaut_id)
+        return cosmonaut
 
     def enroll(self, data: CosmonautCreate) -> Cosmonaut:
         # Бизнес-правило: имя храним нормализованным.
@@ -33,6 +40,14 @@ class CosmonautService:
                 f"Космонавт #{cosmonaut_id} на орбите — сначала верните его"
             )
         self._repo.delete(cosmonaut_id)
+
+    def change_age(self, cosmonaut_id: int, new_age: int) -> Cosmonaut:
+        cosmonaut = self._get(cosmonaut_id)
+        if not (18 <= new_age <= 100):
+            raise CosmonautChangeError(f"Космонавт #{cosmonaut_id} умрет")
+        self._repo.change_age(cosmonaut_id, new_age)
+        return cosmonaut.model_copy(update={"age": new_age})
+
 
 
 class MissionService:
@@ -60,3 +75,7 @@ class MissionService:
         if cosmonaut is None:
             raise CosmonautNotFoundError(cosmonaut_id)
         return cosmonaut
+
+
+
+
