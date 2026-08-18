@@ -86,6 +86,9 @@ def land(
 def age_change(
     cosmonaut_id: int,
     new_age: int,
-    service: MissionService = Depends(get_cosmonaut_service),
+    service: CosmonautService = Depends(get_cosmonaut_service),
 ) -> Cosmonaut:
-    return service.age_change(cosmonaut_id, new_age)
+    try:
+        return service.age_change(cosmonaut_id, new_age)
+    except CosmonautNotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))

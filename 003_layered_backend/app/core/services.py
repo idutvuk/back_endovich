@@ -2,7 +2,6 @@
 
 Не знает ни про HTTP, ни про SQL: сверху views, снизу интерфейс CosmonautRepo.
 """
-from dns import update
 
 from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
 from app.core.interfaces import CosmonautRepo
@@ -36,6 +35,12 @@ class CosmonautService:
         self._repo.delete(cosmonaut_id)
 
 
+    def age_change(self, cosmonaut_id: int, new_age: int) -> Cosmonaut:
+        cosmonaut = self.find(cosmonaut_id)
+        self._repo.set_age(cosmonaut_id, new_age)
+        return cosmonaut.model_copy(update={"age": new_age})
+
+
 class MissionService:
     """Запуск и возвращение. Отдельный класс: другая зона ответственности."""
 
@@ -62,7 +67,3 @@ class MissionService:
             raise CosmonautNotFoundError(cosmonaut_id)
         return cosmonaut
 
-    def age_change(self, cosmonaut_id: int, new_age) -> Cosmonaut:
-        cosmonaut = self._get(cosmonaut_id)
-        self._repo.set_age(cosmonaut_id, new_age)
-        return cosmonaut.model_copy(update={"age": new_age})

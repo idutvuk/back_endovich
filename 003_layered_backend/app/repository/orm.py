@@ -31,7 +31,7 @@ class SqlAlchemyCosmonautRepo:
         row = self._session.get(CosmonautRow, cosmonaut_id)
         return _to_model(row) if row else None
 
-    def list_all(self, in_space: bool | None = None) -> list[Cosmonaut]:
+    def list_allg(self, in_space: bool | None = None) -> list[Cosmonaut]:
         query = select(CosmonautRow)
         if in_space is not None:
             query = query.where(CosmonautRow.in_space == in_space)
@@ -52,9 +52,8 @@ class SqlAlchemyCosmonautRepo:
         self._session.commit()
         return True
 
-    def set_age(self, cosmonaut_id: int, new_age: int) -> Cosmonaut:
+    def set_age(self, cosmonaut_id: int, new_age: int) -> None:
         row = self._session.get(CosmonautRow, cosmonaut_id)
         if row is not None:
             row.age = new_age
             self._session.commit()
-        return _to_model(row)
