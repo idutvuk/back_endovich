@@ -3,7 +3,7 @@
 Не знает ни про HTTP, ни про SQL: сверху views, снизу интерфейс CosmonautRepo.
 """
 
-from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
+from app.core.exceptions import CosmonautNotFoundError, MissionConflictError, DomainError, AgeError
 from app.core.interfaces import CosmonautRepo
 from app.core.models import Cosmonaut, CosmonautCreate
 
@@ -31,6 +31,10 @@ class CosmonautService:
 
     def smena_vozrasta(self, cosmonaut_id: int, vozrast: int) -> None:
         cosmonaut = self._get(cosmonaut_id)
+        if vozrast <= 0:
+            raise AgeError(
+                f"Космонавт #{cosmonaut_id} ещё не родился"
+            )
         self._repo.set_age(cosmonaut_id, vozrast)
 
     def roster(self, in_space: bool | None = None) -> list[Cosmonaut]:
