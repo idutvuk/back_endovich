@@ -7,7 +7,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
+from app.core.exceptions import CosmonautNotFoundError, MissionConflictError, CosmonautChangeError
 from app.core.models import Cosmonaut, CosmonautCreate
 from app.core.services import CosmonautService, MissionService
 from app.views.deps import get_cosmonaut_service, get_mission_service
@@ -90,5 +90,5 @@ def change_age(
 ) -> Cosmonaut:
     try:
         return service.change_age(cosmonaut_id, new_age)
-    except MissionConflictError as exc:
+    except CosmonautChangeError as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(exc))
