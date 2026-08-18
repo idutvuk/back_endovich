@@ -34,6 +34,14 @@ class CosmonautService:
             )
         self._repo.delete(cosmonaut_id)
 
+    def age_up(self, cosmonaut_id: int) -> Cosmonaut:
+        cosmonaut = self._repo.get(cosmonaut_id)
+        if cosmonaut is None:
+            raise CosmonautNotFoundError(cosmonaut_id)
+        else:
+            self._repo.age(cosmonaut_id)
+        return cosmonaut
+
 
 class MissionService:
     """Запуск и возвращение. Отдельный класс: другая зона ответственности."""

@@ -80,3 +80,14 @@ def land(
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
     except MissionConflictError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
+
+
+@router.post("/{cosmonaut_id}/age_up")
+def age_up(
+    cosmonaut_id: int,
+    service: CosmonautService = Depends(get_cosmonaut_service),
+) -> Cosmonaut:
+   try:
+       return service.age_up(cosmonaut_id)
+   except CosmonautNotFoundError as exc:
+       raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
