@@ -6,13 +6,14 @@
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+import random
 
 from app.core.models import Cosmonaut, CosmonautCreate
 from app.repository.db import CosmonautRow
 
 
 def _to_model(row: CosmonautRow) -> Cosmonaut:
-    return Cosmonaut(id=row.id, name=row.name, age=row.age, in_space=row.in_space)
+    return Cosmonaut(id=row.id, name=row.name, age=row.age, in_space=row.in_space, sex=row.sex)
 
 
 class SqlAlchemyCosmonautRepo:
@@ -22,7 +23,8 @@ class SqlAlchemyCosmonautRepo:
         self._session = session
 
     def add(self, cosmonaut: CosmonautCreate) -> Cosmonaut:
-        row = CosmonautRow(name=cosmonaut.name, age=cosmonaut.age)
+        sexxy: list = random.choice(['male', 'female', 'boyevoi vertolet', 'transvestit', 'germofrodit'])
+        row = CosmonautRow(name=cosmonaut.name, age=cosmonaut.age, sex=cosmonaut.sex)
         self._session.add(row)
         self._session.commit()
         return _to_model(row)
