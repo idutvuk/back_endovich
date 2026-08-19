@@ -4,7 +4,7 @@
 """
 
 from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
-from app.core.models import Cosmonaut, CosmonautCreate
+from app.core.models import Cosmonaut, CosmonautCreate, CosmonautUpdate
 from app.repository.orm import SqlAlchemyCosmonautRepo
 
 
@@ -22,6 +22,16 @@ class CosmonautService:
         if cosmonaut is None:
             raise CosmonautNotFoundError(cosmonaut_id)
         return cosmonaut
+
+    def update(self, cosmonaut_id: int, data: CosmonautUpdate) -> Cosmonaut:
+        cosmonaut = self.find(cosmonaut_id)
+        if cosmonaut.in_space:
+            raise MissionConflictError(
+                f"Космонавт #{cosmonaut_id} на орбите — данные менять нельзя"
+            )
+        name = cosmonaut.name if data.name is None else data.name.strip().title()
+        age = cosmonaut.age if data.age is None else data.age
+        return self._repo.update(cosmonaut_id, name=name, age=age)
 
     def roster(self, in_space: bool | None = None) -> list[Cosmonaut]:
         return self._repo.list_all(in_space)

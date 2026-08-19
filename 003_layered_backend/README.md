@@ -41,9 +41,14 @@ curl -X POST localhost:8000/cosmonauts -H 'Content-Type: application/json' -d '{
 curl localhost:8000/cosmonauts/1               # 200 {"id":1,"name":"Юрий","age":27,"in_space":false}
 curl -X POST localhost:8000/cosmonauts/1/launch  # 200 in_space=true
 curl -X POST localhost:8000/cosmonauts/1/launch  # 409 уже в космосе
-curl -X DELETE localhost:8000/cosmonauts/1       # 409 нельзя отчислить с орбиты
-curl 'localhost:8000/cosmonauts?in_space=true'   # фильтр по орбите
+curl -X PATCH localhost:8000/cosmonauts/1 -H 'Content-Type: application/json' -d '{"age": 28}'  # 409 на орбите менять нельзя
 curl -X POST localhost:8000/cosmonauts/1/land    # 200 in_space=false
+curl -X PATCH localhost:8000/cosmonauts/1 -H 'Content-Type: application/json' -d '{"age": 28}'  # 200 age=28
+curl -X PATCH localhost:8000/cosmonauts/1 -H 'Content-Type: application/json' -d '{"age": 5}'   # 422 валидация
+curl -X DELETE localhost:8000/cosmonauts/1       # 403 нужен ключ командира
+curl -X DELETE localhost:8000/cosmonauts/1 -H 'X-Commander-Key: glavkosmos'  # 204
+curl 'localhost:8000/cosmonauts?in_space=true'   # фильтр по орбите
+curl 'localhost:8000/cosmonauts?format=csv'      # тот же список, но text/csv
 curl localhost:8000/cosmonauts/999               # 404 не найден
 ```
 

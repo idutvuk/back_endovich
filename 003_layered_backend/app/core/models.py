@@ -17,3 +17,10 @@ class Cosmonaut(BaseModel):
     name: str
     age: int
     in_space: bool = False
+
+
+class CosmonautUpdate(BaseModel):
+    """PATCH: все поля необязательные — меняем только то, что прислали."""
+
+    name: str | None = Field(default=None, min_length=1, max_length=100)
+    age: int | None = Field(default=None, ge=18, le=100)

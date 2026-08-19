@@ -38,6 +38,13 @@ class SqlAlchemyCosmonautRepo:
         rows = self._session.scalars(query).all()
         return [_to_model(row) for row in rows]
 
+    def update(self, cosmonaut_id: int, name: str, age: int) -> Cosmonaut:
+        row = self._session.get(CosmonautRow, cosmonaut_id)
+        row.name = name
+        row.age = age
+        self._session.commit()
+        return _to_model(row)
+
     def set_in_space(self, cosmonaut_id: int, in_space: bool) -> None:
         row = self._session.get(CosmonautRow, cosmonaut_id)
         if row is not None:

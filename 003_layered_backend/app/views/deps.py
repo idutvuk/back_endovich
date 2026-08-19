@@ -3,7 +3,7 @@
 
 from collections.abc import Iterator
 
-from fastapi import Depends
+from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.services import CosmonautService, MissionService
@@ -26,3 +26,15 @@ def get_mission_service(
     session: Session = Depends(get_session),
 ) -> MissionService:
     return MissionService(SqlAlchemyCosmonautRepo(session))
+
+
+COMMANDER_KEY = "glavkosmos"
+
+
+def require_commander(x_commander_key: str = Header(default="")) -> None:
+    """Пускает дальше только с заголовком X-Commander-Key: glavkosmos."""
+    if x_commander_key != COMMANDER_KEY:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail="Только для командира: нужен заголовок X-Commander-Key",
+        )
