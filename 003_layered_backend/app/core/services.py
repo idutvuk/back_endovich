@@ -1,15 +1,15 @@
 """CORE (LOGIC) — классы, которые делают бизнес-логику.
 
-Не знает ни про HTTP, ни про SQL: сверху views, снизу интерфейс CosmonautRepo.
+Не знает ни про HTTP, ни про SQL: сверху views, снизу репозиторий.
 """
 
 from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
-from app.core.interfaces import CosmonautRepo
 from app.core.models import Cosmonaut, CosmonautCreate
+from app.repository.orm import SqlAlchemyCosmonautRepo
 
 
 class CosmonautService:
-    def __init__(self, repo: CosmonautRepo) -> None:
+    def __init__(self, repo: SqlAlchemyCosmonautRepo) -> None:
         self._repo = repo
 
     def enroll(self, data: CosmonautCreate) -> Cosmonaut:
@@ -38,7 +38,7 @@ class CosmonautService:
 class MissionService:
     """Запуск и возвращение. Отдельный класс: другая зона ответственности."""
 
-    def __init__(self, repo: CosmonautRepo) -> None:
+    def __init__(self, repo: SqlAlchemyCosmonautRepo) -> None:
         self._repo = repo
 
     def launch(self, cosmonaut_id: int) -> Cosmonaut:
