@@ -13,16 +13,15 @@ app/
 ├── core/                   # LOGIC: бизнес-логика (не знает ни HTTP, ни SQL)
 │   ├── models.py           #   доменные модели (pydantic)
 │   ├── services.py         #   CosmonautService, MissionService
-│   ├── interfaces.py       #   контракт CosmonautRepo (Protocol)
 │   └── exceptions.py       #   ошибки предметной области
 └── repository/             # REPO: разговор с БД (весь SQL/ORM тут)
     ├── db.py               #   движок SQLAlchemy, сессии, ORM-таблица CosmonautRow
-    └── orm.py              #   SqlAlchemyCosmonautRepo — реализация контракта
+    └── orm.py              #   SqlAlchemyCosmonautRepo — запросы к базе
 ```
 
 Ключевые идеи:
-- Интерфейс `CosmonautRepo` лежит в `core`, реализация — в `repository`.
-  Ядро диктует контракт (инверсия зависимостей); базу можно заменить, не трогая логику.
+- Слои разделены по ответственности: HTTP — во `views`, бизнес-правила — в `core`,
+  весь SQL — в `repository`.
 - Две разные "модели": `CosmonautRow` (ORM, про хранение) и `Cosmonaut`
   (pydantic, про предметную область). Репозиторий переводит одну в другую.
 - Ошибки core (`CosmonautNotFoundError`, `MissionConflictError`) хэндлеры
