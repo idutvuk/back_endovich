@@ -6,7 +6,6 @@
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-import random
 
 from app.core.models import Cosmonaut, CosmonautCreate
 from app.repository.db import CosmonautRow
@@ -23,7 +22,6 @@ class SqlAlchemyCosmonautRepo:
         self._session = session
 
     def add(self, cosmonaut: CosmonautCreate) -> Cosmonaut:
-        sexxy: list = random.choice(['male', 'female', 'boyevoi vertolet', 'transvestit', 'germofrodit'])
         row = CosmonautRow(name=cosmonaut.name, age=cosmonaut.age, sex=cosmonaut.sex)
         self._session.add(row)
         self._session.commit()
