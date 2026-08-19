@@ -15,12 +15,7 @@ class CosmonautService:
 
     def enroll(self, data: CosmonautCreate) -> Cosmonaut:
         # Бизнес-правило: имя храним нормализованным.
-        if data.month == 1 or data.month == 2:
-            data.Zodiac = "лох"
-        elif data.month == 3 and data.date < 15:
-            data.Zodiac = "лох"
-        else:
-            data.Zodiac = "крутой"
+
 
         normalized = data.model_copy(update={"name": data.name.strip().title()})
         return self._repo.add(normalized)
@@ -29,6 +24,12 @@ class CosmonautService:
         cosmonaut = self._repo.get(cosmonaut_id)
         if cosmonaut is None:
             raise CosmonautNotFoundError(cosmonaut_id)
+        if cosmonaut.month == 1 or cosmonaut.month == 2:
+            cosmonaut.Zodiac = "лох"
+        elif cosmonaut.month == 3 and cosmonaut.date < 15:
+            cosmonaut.Zodiac = "лох"
+        else:
+            cosmonaut.Zodiac = "крутой"
         return cosmonaut
 
     def roster(self, in_space: bool | None = None) -> list[Cosmonaut]:
