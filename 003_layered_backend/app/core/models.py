@@ -8,6 +8,8 @@ class CosmonautCreate(BaseModel):
 
     name: str = Field(min_length=1, max_length=100)
     age: int = Field(ge=18, le=100)
+    date: int = Field(ge=1, le=31)
+    month: int = Field(ge=1, le=12)
 
 
 class Cosmonaut(BaseModel):
@@ -16,4 +18,7 @@ class Cosmonaut(BaseModel):
     id: int
     name: str
     age: int
+    date: int
+    month: int
     in_space: bool = False
+    Zodiac: str

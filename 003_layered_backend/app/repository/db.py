@@ -23,6 +23,9 @@ class CosmonautRow(Base):
     name: Mapped[str]
     age: Mapped[int]
     in_space: Mapped[bool] = mapped_column(default=False)
+    date: Mapped[int]
+    month: Mapped[int]
+    Zodiac: Mapped[str]
 
 
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False})

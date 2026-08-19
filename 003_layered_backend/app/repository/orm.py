@@ -22,7 +22,8 @@ class SqlAlchemyCosmonautRepo:
         self._session = session
 
     def add(self, cosmonaut: CosmonautCreate) -> Cosmonaut:
-        row = CosmonautRow(name=cosmonaut.name, age=cosmonaut.age)
+        row = CosmonautRow(name=cosmonaut.name, age=cosmonaut.age,date = cosmonaut.date,month = cosmonaut.month)
+
         self._session.add(row)
         self._session.commit()
         return _to_model(row)

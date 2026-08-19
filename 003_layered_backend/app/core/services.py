@@ -6,6 +6,7 @@
 from app.core.exceptions import CosmonautNotFoundError, MissionConflictError
 from app.core.interfaces import CosmonautRepo
 from app.core.models import Cosmonaut, CosmonautCreate
+from app.views import cosmonauts
 
 
 class CosmonautService:
@@ -14,6 +15,13 @@ class CosmonautService:
 
     def enroll(self, data: CosmonautCreate) -> Cosmonaut:
         # Бизнес-правило: имя храним нормализованным.
+        if data.month == 1 or data.month == 2:
+            data.Zodiac = "лох"
+        elif data.month == 3 and data.date < 15:
+            data.Zodiac = "лох"
+        else:
+            data.Zodiac = "крутой"
+
         normalized = data.model_copy(update={"name": data.name.strip().title()})
         return self._repo.add(normalized)
 
